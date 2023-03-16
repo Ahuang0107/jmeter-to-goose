@@ -7,5 +7,4 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.69"
-quick-xml = { version = "0.27.1", features = ["serde-types", "serialize"] }
-serde = "1.0.154"
+xmltree = "0.10.3"

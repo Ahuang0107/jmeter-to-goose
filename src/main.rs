@@ -1,64 +1,29 @@
-use quick_xml::events::Event;
-use quick_xml::Reader;
+use std::fs::read_to_string;
+use xmltree::{Element, XMLNode};
 
-enum Element {
-    Text(String),
-    Element {
-        _name: String,
-        _properties: Vec<(String, String)>,
-        _children: Vec<Element>,
-    },
-}
-
-impl Element {
-    fn el(name: &str) -> Self {
-        Self::Element {
-            _name: String::from(name),
-            _properties: vec![],
-            _children: vec![],
-        }
-    }
-    fn text(content: &str) -> Self {
-        Self::Text(String::from(content))
-    }
-}
+mod basic_prop;
 
 fn main() -> anyhow::Result<()> {
-    let xml = r#"
-<?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="3.2" jmeter="3.3-SNAPSHOT.20170917">
-  <hashTree>
-    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="CSVSample" enabled="true">
-    </TestPlan>
-    <hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="true">
-      </ThreadGroup>
-      <hashTree>
-      </hashTree>
-      <ResultCollector guiclass="TableVisualizer" testclass="ResultCollector" testname="View Results in Table" enabled="true">
-      </ResultCollector>
-      <hashTree/>
-      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
-      </ResultCollector>
-      <hashTree/>
-    </hashTree>
-  </hashTree>
-</jmeterTestPlan>
-    "#;
-    let mut reader = Reader::from_str(xml);
-    reader.trim_text(true);
+    let xml = read_to_string("test.xml")?;
+    let doc = Element::parse(xml.as_bytes()).unwrap();
 
-    loop {
-        match reader.read_event()? {
-            Event::Start(data) => {
-                println!("{:?}", String::from_utf8_lossy(data.name().as_ref()))
+    assert_eq!(doc.children.len(), 1);
+
+    if let Some(x) = doc.children.first() {
+        match x {
+            XMLNode::Element(data) => {
+                assert_eq!(data.children.len(), 2);
+                let element = data.children[0].as_element().unwrap();
+                let children = data.children[1]
+                    .as_element()
+                    .unwrap()
+                    .children
+                    .iter()
+                    .map(|c| c.as_element().unwrap())
+                    .collect::<Vec<&Element>>();
+                assert_eq!(&element.name, "TestPlan");
+                assert!(children.len() > 1);
             }
-            Event::End(data) => {
-                println!("{:?}", String::from_utf8_lossy(data.name().as_ref()))
-            }
-            Event::Empty(_) => {}
-            Event::Text(_) => {}
-            Event::Eof => break,
             _ => {}
         }
     }
