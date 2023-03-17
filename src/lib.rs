@@ -7,6 +7,25 @@ pub use config_element::*;
 pub use test_plan::*;
 use xmltree::Element;
 
+/// TestClass
+///
+/// # Examples
+///
+/// ```
+/// use std::fs::read_to_string;
+/// use xmltree::Element;
+/// use jmeter_to_goose::TestClass;
+///
+/// # fn main() -> std::io::Result<()> {
+/// let xml = read_to_string("test.xml")?;
+/// let doc = Element::parse(xml.as_bytes()).unwrap();
+///
+/// let root = TestClass::root(&doc);
+/// println!("{:?}", root);
+/// #
+/// #     Ok(())
+/// # }
+/// ```
 #[derive(Debug)]
 pub enum TestClass {
     TestPlan(TestPlan, Vec<TestClass>),
@@ -14,6 +33,16 @@ pub enum TestClass {
 }
 
 impl TestClass {
+    pub fn root(ele: &Element) -> Self {
+        assert_eq!(ele.children.len(), 1);
+
+        let ele = ele.children.first().unwrap().as_element().unwrap();
+        assert_eq!(ele.children.len(), 2);
+
+        let element = ele.children[0].as_element().unwrap();
+        let sub = ele.children[1].as_element().unwrap();
+        Self::parse(element, sub)
+    }
     pub fn parse(ele: &Element, hash_tree: &Element) -> Self {
         assert_eq!(hash_tree.name, String::from("hashTree"));
         assert_eq!(hash_tree.children.len() % 2, 0);
