@@ -1,7 +1,6 @@
+use jmeter_to_goose::TestClass;
 use std::fs::read_to_string;
 use xmltree::{Element, XMLNode};
-
-mod basic_prop;
 
 fn main() -> anyhow::Result<()> {
     let xml = read_to_string("test.xml")?;
@@ -14,15 +13,8 @@ fn main() -> anyhow::Result<()> {
             XMLNode::Element(data) => {
                 assert_eq!(data.children.len(), 2);
                 let element = data.children[0].as_element().unwrap();
-                let children = data.children[1]
-                    .as_element()
-                    .unwrap()
-                    .children
-                    .iter()
-                    .map(|c| c.as_element().unwrap())
-                    .collect::<Vec<&Element>>();
-                assert_eq!(&element.name, "TestPlan");
-                assert!(children.len() > 1);
+                let sub = data.children[1].as_element().unwrap();
+                println!("{:?}", TestClass::parse(element, sub));
             }
             _ => {}
         }
