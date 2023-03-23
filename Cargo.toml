@@ -8,3 +8,5 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.69"
 xmltree = "0.10.3"
+quick-xml = { version = "0.28.1", features = ["serialize"] }
+serde = { version = "1.0.158", features = ["derive"] }

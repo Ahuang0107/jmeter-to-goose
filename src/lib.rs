@@ -2,6 +2,7 @@ mod basic_prop;
 mod collection_prop;
 mod config_element;
 mod element_prop;
+mod prop;
 mod test_plan;
 mod thread;
 
