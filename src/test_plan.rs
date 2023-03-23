@@ -3,57 +3,6 @@ use std::collections::HashMap;
 use xmltree::Element;
 
 /// TestPlan
-///
-/// # Examples
-///
-/// ```
-/// use std::collections::HashMap;
-/// use xmltree::Element;
-/// use jmeter_to_goose::TestPlan;
-///
-/// let xml = Element::parse(r#"
-/// <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan" enabled="true">
-///     <stringProp name="TestPlan.comments"></stringProp>
-///     <boolProp name="TestPlan.functional_mode">false</boolProp>
-///     <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
-///     <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
-///     <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-///         <collectionProp name="Arguments.arguments">
-///             <elementProp name="protocol" elementType="Argument">
-///                 <stringProp name="Argument.name">protocol</stringProp>
-///                 <stringProp name="Argument.value">https</stringProp>
-///                 <stringProp name="Argument.metadata">=</stringProp>
-///             </elementProp>
-///             <elementProp name="ip" elementType="Argument">
-///                 <stringProp name="Argument.name">ip</stringProp>
-///                 <stringProp name="Argument.value">example.github.com</stringProp>
-///                 <stringProp name="Argument.metadata">=</stringProp>
-///             </elementProp>
-///         </collectionProp>
-///     </elementProp>
-///     <stringProp name="TestPlan.user_define_classpath"></stringProp>
-/// </TestPlan>
-/// "#.trim().as_bytes(),
-/// )
-/// .unwrap();
-/// assert_eq!(
-///     TestPlan::parse(&xml),
-///     TestPlan {
-///         test_name: String::from("Test Plan"),
-///         enabled: true,
-///         variables: HashMap::from([
-///             (
-///                 String::from("protocol"),
-///                 String::from("https")
-///             ),
-///             (
-///                 String::from("ip"),
-///                 String::from("example.github.com")
-///             )
-///         ])
-///     }
-/// )
-/// ```
 #[derive(Debug, PartialEq)]
 pub struct TestPlan {
     pub test_name: String,
@@ -88,5 +37,35 @@ impl TestPlan {
             enabled,
             variables,
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+
+    #[test]
+    fn check_parse() {
+        use crate::TestPlan;
+        use std::collections::HashMap;
+        use xmltree::Element;
+
+        let xml = Element::parse(
+            std::fs::read_to_string("./unittests_data/test_plan/test_plan.xml")
+                .unwrap()
+                .trim()
+                .as_bytes(),
+        )
+        .unwrap();
+        assert_eq!(
+            TestPlan::parse(&xml),
+            TestPlan {
+                test_name: String::from("Test Plan"),
+                enabled: true,
+                variables: HashMap::from([
+                    (String::from("protocol"), String::from("https")),
+                    (String::from("ip"), String::from("example.github.com"))
+                ])
+            }
+        )
     }
 }

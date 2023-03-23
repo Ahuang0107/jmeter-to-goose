@@ -1,0 +1,10 @@
+<collectionProp name="HeaderManager.headers">
+    <elementProp name="Content-Type" elementType="Header">
+        <stringProp name="Header.name">Content-Type</stringProp>
+        <stringProp name="Header.value">application/json</stringProp>
+    </elementProp>
+    <elementProp name="accept-encoding" elementType="Header">
+        <stringProp name="Header.name">accept-encoding</stringProp>
+        <stringProp name="Header.value">gzip</stringProp>
+    </elementProp>
+</collectionProp>

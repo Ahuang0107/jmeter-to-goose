@@ -1,0 +1,12 @@
+<collectionProp name="Arguments.arguments">
+    <elementProp name="protocol" elementType="Argument">
+        <stringProp name="Argument.name">protocol</stringProp>
+        <stringProp name="Argument.value">https</stringProp>
+        <stringProp name="Argument.metadata">=</stringProp>
+    </elementProp>
+    <elementProp name="ip" elementType="Argument">
+        <stringProp name="Argument.name">ip</stringProp>
+        <stringProp name="Argument.value">example.github.com</stringProp>
+        <stringProp name="Argument.metadata">=</stringProp>
+    </elementProp>
+</collectionProp>

@@ -2,27 +2,6 @@ use crate::{Deserializer, Pairable, StringProp};
 use xmltree::Element;
 
 /// `<elementProp elementType="Header">`
-///
-/// # Examples
-///
-/// ```
-/// use xmltree::Element;
-/// use jmeter_to_goose::{ElementHeader, Deserializer};
-///
-/// let xml = Element::parse(r#"
-/// <elementProp name="header name" elementType="Header">
-///     <stringProp name="Header.name">header name</stringProp>
-///     <stringProp name="Header.value">header value</stringProp>
-/// </elementProp>
-/// "#.trim().as_bytes()).unwrap();
-/// assert_eq!(
-///     ElementHeader::parse(&xml),
-///     ElementHeader {
-///         name: String::from("header name"),
-///         value: String::from("header value")
-///     }
-/// )
-/// ```
 #[derive(Debug, PartialEq)]
 pub struct ElementHeader {
     pub name: String,
@@ -64,29 +43,6 @@ impl Deserializer for ElementHeader {
 }
 
 /// `<elementProp elementType="Argument">`
-///
-/// # Examples
-///
-/// ```
-/// use xmltree::Element;
-/// use jmeter_to_goose::{ElementArgument, Deserializer};
-///
-/// let xml = Element::parse(r#"
-/// <elementProp name="protocol" elementType="Argument">
-///     <stringProp name="Argument.name">protocol</stringProp>
-///     <stringProp name="Argument.value">https</stringProp>
-///     <stringProp name="Argument.metadata">=</stringProp>
-/// </elementProp>
-/// "#.trim().as_bytes()).unwrap();
-/// assert_eq!(
-///     ElementArgument::parse(&xml),
-///     ElementArgument {
-///         name: String::from("protocol"),
-///         value: String::from("https"),
-///         metadata: String::from("="),
-///     }
-/// )
-/// ```
 #[derive(Debug, PartialEq)]
 pub struct ElementArgument {
     pub name: String,
@@ -142,29 +98,8 @@ impl Deserializer for ElementArgument {
 }
 
 /// `<elementProp elementType="LoopController">`
-///
-/// # Examples
-///
-/// ```
-/// use xmltree::Element;
-/// use jmeter_to_goose::{Deserializer, ElementLoopController};
-///
-/// let xml = Element::parse(r#"
-/// <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
-///     <boolProp name="LoopController.continue_forever">false</boolProp>
-///     <stringProp name="LoopController.loops">1</stringProp>
-/// </elementProp>
-/// "#.trim().as_bytes()).unwrap();
-/// assert_eq!(
-///     ElementLoopController::parse(&xml),
-///     ElementLoopController {
-///         loops: 1
-///     }
-/// )
-/// ```
 #[derive(Debug, PartialEq)]
 pub struct ElementLoopController {
-    // pub continue_forever: bool,
     pub loops: i32,
 }
 
@@ -194,5 +129,69 @@ impl Deserializer for ElementLoopController {
             .parse::<i32>()
             .unwrap();
         Self { loops }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::Deserializer;
+    use xmltree::Element;
+
+    #[test]
+    fn check_parse_element_header() {
+        use crate::ElementHeader;
+
+        let xml = Element::parse(
+            std::fs::read_to_string("./unittests_data/element_prop/element_header.xml")
+                .unwrap()
+                .trim()
+                .as_bytes(),
+        )
+        .unwrap();
+        assert_eq!(
+            ElementHeader::parse(&xml),
+            ElementHeader {
+                name: String::from("header name"),
+                value: String::from("header value")
+            }
+        )
+    }
+
+    #[test]
+    fn check_parse_element_argument() {
+        use crate::ElementArgument;
+
+        let xml = Element::parse(
+            std::fs::read_to_string("./unittests_data/element_prop/element_argument.xml")
+                .unwrap()
+                .trim()
+                .as_bytes(),
+        )
+        .unwrap();
+        assert_eq!(
+            ElementArgument::parse(&xml),
+            ElementArgument {
+                name: String::from("protocol"),
+                value: String::from("https"),
+                metadata: String::from("="),
+            }
+        )
+    }
+
+    #[test]
+    fn check_parse_element_loop_controller() {
+        use crate::ElementLoopController;
+
+        let xml = Element::parse(
+            std::fs::read_to_string("./unittests_data/element_prop/element_loop_controller.xml")
+                .unwrap()
+                .trim()
+                .as_bytes(),
+        )
+        .unwrap();
+        assert_eq!(
+            ElementLoopController::parse(&xml),
+            ElementLoopController { loops: 1 }
+        )
     }
 }

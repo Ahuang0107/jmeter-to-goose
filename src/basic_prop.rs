@@ -2,24 +2,6 @@ use crate::Deserializer;
 use xmltree::Element;
 
 /// `<stringProp>`
-///
-/// # Examples
-///
-/// ```
-/// use xmltree::Element;
-/// use jmeter_to_goose::{Deserializer, StringProp};
-///
-/// let xml = Element::parse(r#"
-/// <stringProp name="prop name">string prop value</stringProp>
-/// "#.trim().as_bytes()).unwrap();
-/// assert_eq!(
-///     StringProp::parse(&xml),
-///     StringProp {
-///         name: String::from("prop name"),
-///         value: String::from("string prop value")
-///     }
-/// )
-/// ```
 #[derive(Debug, PartialEq)]
 pub struct StringProp {
     pub name: String,
@@ -41,24 +23,6 @@ impl Deserializer for StringProp {
 }
 
 /// `<boolProp>`
-///
-/// # Examples
-///
-/// ```
-/// use xmltree::Element;
-/// use jmeter_to_goose::{BoolProp, Deserializer};
-///
-/// let xml = Element::parse(r#"
-/// <boolProp name="prop name">true</boolProp>
-/// "#.trim().as_bytes()).unwrap();
-/// assert_eq!(
-///     BoolProp::parse(&xml),
-///     BoolProp {
-///         name: String::from("prop name"),
-///         value: true
-///     }
-/// )
-/// ```
 #[derive(Debug, PartialEq)]
 pub struct BoolProp {
     pub name: String,
@@ -78,5 +42,51 @@ impl Deserializer for BoolProp {
             .parse::<bool>()
             .unwrap();
         Self { name, value }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::Deserializer;
+    use xmltree::Element;
+
+    #[test]
+    fn string_prop_check_parse() {
+        use crate::StringProp;
+
+        let xml = Element::parse(
+            std::fs::read_to_string("./unittests_data/basic_prop/string_prop.xml")
+                .unwrap()
+                .trim()
+                .as_bytes(),
+        )
+        .unwrap();
+        assert_eq!(
+            StringProp::parse(&xml),
+            StringProp {
+                name: String::from("prop name"),
+                value: String::from("string prop value")
+            }
+        )
+    }
+
+    #[test]
+    fn bool_prop_check_parse() {
+        use crate::BoolProp;
+
+        let xml = Element::parse(
+            std::fs::read_to_string("./unittests_data/basic_prop/bool_prop.xml")
+                .unwrap()
+                .trim()
+                .as_bytes(),
+        )
+        .unwrap();
+        assert_eq!(
+            BoolProp::parse(&xml),
+            BoolProp {
+                name: String::from("prop name"),
+                value: true
+            }
+        )
     }
 }
